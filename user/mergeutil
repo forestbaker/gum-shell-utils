@@ -19,7 +19,7 @@ function doPatch() {
 	fi
 	FILE="$1"
 	shift
-	patch -p0 --no-backup-if-mismatch -l -E --global-reject-file=cambiamentiRifiutati.rej -i "$FILE" $@
+	patch -p0 --no-backup-if-mismatch -l -E --global-reject-file=rejectedDiff.rej -i "$FILE" $@
 }
 
 function doDiff() {
