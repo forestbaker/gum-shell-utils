@@ -1,10 +1,10 @@
 #!/bin/bash
 function helpMsg() {
 	nextMsg="$1"
-	echo "Utilizzo: $(basename $0) <comando>"
-	echo "I comandi disponibili sono: "
-	echo "° diff - crea un file di diff (modifiche svn) per il port delle differenze tra branch diversi"
-	echo "° patch - applica il file di diff generato"
+	echo "Usage: $(basename $0) <command>"
+	echo "Available commands: "
+	echo "° diff - creates a diff file (using svn diff) to compare different branches"
+	echo "° patch - applies the previously created diff file"
 	if test "x$nextMsg" != "x"; then
 		echo -e "\n$nextMsg"
 	fi
@@ -14,7 +14,7 @@ function helpMsg() {
 
 function doPatch() {
 	if test "x$1" == "x" || ! [ -r "$1" ]; then
-		helpMSG="Argomenti per patch: <file di diff> [argomenti aggiuntivi per svn diff]"
+		helpMSG="Arguments for patch: <diff file> [optional arguments for patch]"
 		helpMsg "$helpMSG"
 	fi
 	FILE="$1"
@@ -27,8 +27,8 @@ function doDiff() {
       REV2=$2
       FILE="$3"
       if test "x$1" == "x" || test "x$2" == "x" || test "x$3" == "x"; then
-	helpMSG="Argomenti per diff: <prima revisione> <seconda revisione> <file diff> [argomenti aggiuntivi per patch]
-Il formato delle revisioni può essere indifferentemente r1234 o 1234"
+	helpMSG="Arguments for diff: <first revision> <second revision> <diff file> [optional arguments for svn diff]
+Revision number format can either be r1234 or 1234"
 	helpMsg "$helpMSG"
       fi
       shift; shift; shift
