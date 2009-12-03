@@ -1,0 +1,57 @@
+#!/bin/bash
+function helpMsg() {
+	nextMsg="$1"
+	echo "Utilizzo: $(basename $0) <comando>"
+	echo "I comandi disponibili sono: "
+	echo "° diff - crea un file di diff (modifiche svn) per il port delle differenze tra branch diversi"
+	echo "° patch - applica il file di diff generato"
+	if test "x$nextMsg" != "x"; then
+		echo -e "\n$nextMsg"
+	fi
+	echo ""
+	exit 1
+}
+
+function doPatch() {
+	if test "x$1" == "x" || ! [ -r "$1" ]; then
+		helpMSG="Argomenti per patch: <file di diff> [argomenti aggiuntivi per svn diff]"
+		helpMsg "$helpMSG"
+	fi
+	FILE="$1"
+	shift
+	patch -p0 --no-backup-if-mismatch -l -E --global-reject-file=cambiamentiRifiutati.rej -i "$FILE" $@
+}
+
+function doDiff() {
+      REV1=$1
+      REV2=$2
+      FILE="$3"
+      if test "x$1" == "x" || test "x$2" == "x" || test "x$3" == "x"; then
+	helpMSG="Argomenti per diff: <prima revisione> <seconda revisione> <file diff> [argomenti aggiuntivi per patch]
+Il formato delle revisioni può essere indifferentemente r1234 o 1234"
+	helpMsg "$helpMSG"
+      fi
+      shift; shift; shift
+      #Sostituzione "r1234" con "1234" in modo da facilitare il cut&paste da svn log
+      REV1="$( echo $REV1 | sed "s/r//g")"
+      REV2="$( echo $REV2 | sed "s/r//g")"
+      svn diff -r $REV1:$REV2 --diff-cmd=diff -x -uw $@ > "$FILE" 
+}
+
+CMD=$1
+
+if test "x$1" == "x"; then 
+	helpMsg
+fi
+shift
+case $CMD in
+	"diff")
+	doDiff $@
+	;;
+	"patch")
+	doPatch $@
+	;;
+	*)
+	helpMsg
+	;;
+esac
