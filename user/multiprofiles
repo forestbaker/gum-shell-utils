@@ -4,10 +4,10 @@ WORK_PROFILE="$PROFILES_FILE.work"
 
 function create_conf_file() {
     cat >"$PROFILES_FILE" <<EOF
-## $( basename $0 ) configuration file
-## Syntax: PROFILE/key=value
-## You can use multiple profiles for each area
-## For instance, you can have 3 profiles for sql variables, and 2 for a generic environment
+# $( basename $0 ) configuration file
+# Syntax: PROFILE/key=value
+# You can use multiple profiles for each area
+# For instance, you can have 3 profiles for sql variables, and 2 for a generic environment
 EOF
     echo "Configuration file $PROFILES_FILE created."
     echo "Probably you may want to edit it before continuing, exiting..."
@@ -29,7 +29,7 @@ function parseProfile() {
 
 function list_profiles() {
     echo "Profiles List"
-    cat "$PROFILES_FILE" | grep -ve "^#" | sed "s/\/[a-zA-Z0-9\-]*=.*//g"
+    cat "$PROFILES_FILE" | grep -ve "^#" | grep "=" | sed "s/\/[a-zA-Z0-9\-\_]*=.*//g"
     exit 0 
 }
 
@@ -60,7 +60,7 @@ if test "x$@" == "x"; then
 fi
 
 
-echo "Using configuration file $PROFILES_FILE"
+# echo "Using configuration file $PROFILES_FILE"
 
 while test "x$1" != "x"; do
     case "$1" in
