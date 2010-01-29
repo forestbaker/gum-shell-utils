@@ -5,7 +5,7 @@ function installFile() {
 	DIR="$2"
 	DESTFILE="$DIR/$(basename $FILE)"
 	echo -e "Copying $FILE to $DIR... "
-	cp "$FILE" "$DIR" -a
+	cp "$FILE" "$DIR" 
 	echo -e " Setting executable bit... "
 	chmod +x "$DESTFILE"
 	echo "done"

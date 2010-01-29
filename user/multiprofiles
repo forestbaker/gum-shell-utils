@@ -1,0 +1,92 @@
+#!/bin/bash
+PROFILES_FILE="$( basename $0 .sh).conf"
+WORK_PROFILE="$PROFILES_FILE.work"
+
+function create_conf_file() {
+    cat >$PROFILES_FILE <<EOF
+## $( basename $0 ) configuration file
+## Syntax: PROFILE_key=value
+## You can use multiple profiles for each area
+## For instance, you can have 3 profiles for sql variables, and 2 for a generic environment
+EOF
+    echo "Configuration file $PROFILES_FILE created."
+    echo "Probably you may want to edit it before continuing, exiting..."
+    exit 0
+}
+
+function doClean() {
+    if [ -r "$WORK_PROFILE" ]; then rm "$WORK_PROFILE"; fi
+}
+
+function isValidProfile() {
+    grep -q -e "^$1_" "$PROFILES_FILE"
+    return $?
+}
+
+function parseProfile() {
+    grep -e "^$1_" "$PROFILES_FILE" | sed "s/^$1_//g" >> "$WORK_PROFILE"
+}
+
+function list_profiles() {
+    echo "Profiles List"
+    cat "$PROFILES_FILE" | grep -ve "^#" | sed "s/_[a-zA-Z0-9]*=.*//g"
+    exit 0 
+}
+
+function sourceProfiles() {
+    source "$WORK_PROFILE"
+}
+
+
+function help_message() {
+    if test "x$@" != "x"; then
+        echo -e "$@\n"
+    fi 
+    app="$0"
+    echo -e "Usages:\n\t$0 profiles\t\tlist of profiles separated by spaces"
+    echo -e "\t$0 create_conf\t\tcreates a template for the configuration file"
+    echo -e "\t$0 --help\t\t\tthis help screen"
+    doClean
+    exit 0
+}
+
+if ! [ -r "$PROFILES_FILE" ] &&  test "x$1" != "xcreate_conf" ; then
+    help_message "Configuration file "$PROFILES_FILE" not existing. Perhaps you want to create it?"    
+fi
+if test "x$@" == "x"; then
+    help_message
+fi
+
+
+echo "Using configuration file $PROFILES_FILE"
+
+#if [ -r "$PROFILES_FILE" ]; then
+#    cp $PROFILES_FILE $WORK_PROFILE
+#fi
+
+while test "x$1" != "x"; do
+    case "$1" in
+        "--help")
+            help_message
+	;;
+	"create_conf")
+            create_conf_file
+        ;;
+        "profiles")
+            list_profiles
+        ;;
+	*)
+	    if ! isValidProfile $1; then
+                help_message "Profile $1 does not exist in configuration file $PROFILES_FILE"
+            fi
+         parseProfile "$1"
+	;;
+    esac
+    shift
+done
+
+sourceProfiles
+doClean
+
+## Your Code here... or source me ;-)
+
