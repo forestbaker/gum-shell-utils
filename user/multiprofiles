@@ -3,9 +3,9 @@ PROFILES_FILE="$( basename $0 .sh).conf"
 WORK_PROFILE="$PROFILES_FILE.work"
 
 function create_conf_file() {
-    cat >$PROFILES_FILE <<EOF
+    cat >"$PROFILES_FILE" <<EOF
 ## $( basename $0 ) configuration file
-## Syntax: PROFILE_key=value
+## Syntax: PROFILE/key=value
 ## You can use multiple profiles for each area
 ## For instance, you can have 3 profiles for sql variables, and 2 for a generic environment
 EOF
@@ -19,17 +19,17 @@ function doClean() {
 }
 
 function isValidProfile() {
-    grep -q -e "^$1_" "$PROFILES_FILE"
+    grep -q -e "^$1\/" "$PROFILES_FILE"
     return $?
 }
 
 function parseProfile() {
-    grep -e "^$1_" "$PROFILES_FILE" | sed "s/^$1_//g" >> "$WORK_PROFILE"
+    grep -e "^$1\/" "$PROFILES_FILE" | sed "s/^$1\///g" >> "$WORK_PROFILE"
 }
 
 function list_profiles() {
     echo "Profiles List"
-    cat "$PROFILES_FILE" | grep -ve "^#" | sed "s/_[a-zA-Z0-9]*=.*//g"
+    cat "$PROFILES_FILE" | grep -ve "^#" | sed "s/\/[a-zA-Z0-9\-]*=.*//g"
     exit 0 
 }
 
@@ -43,9 +43,11 @@ function help_message() {
         echo -e "$@\n"
     fi 
     app="$0"
-    echo -e "Usages:\n\t$0 profiles\t\tlist of profiles separated by spaces"
-    echo -e "\t$0 create_conf\t\tcreates a template for the configuration file"
-    echo -e "\t$0 --help\t\t\tthis help screen"
+
+    echo -e "Usages:\n\t$0 <profile1 profile2...>\t\tlist of profiles separated by spaces"
+    echo -e "\t$0 list-profiles\t\t\tshows a list of available profiles from configuration file"
+    echo -e "\t$0 create_conf\t\t\tcreates a template for the configuration file"
+    echo -e "\t$0 --help\t\t\t\tthis help screen"
     doClean
     exit 0
 }
@@ -60,10 +62,6 @@ fi
 
 echo "Using configuration file $PROFILES_FILE"
 
-#if [ -r "$PROFILES_FILE" ]; then
-#    cp $PROFILES_FILE $WORK_PROFILE
-#fi
-
 while test "x$1" != "x"; do
     case "$1" in
         "--help")
@@ -72,7 +70,7 @@ while test "x$1" != "x"; do
 	"create_conf")
             create_conf_file
         ;;
-        "profiles")
+        "list-profiles")
             list_profiles
         ;;
 	*)
