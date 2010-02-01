@@ -55,7 +55,7 @@ function help_message() {
 if ! [ -r "$PROFILES_FILE" ] &&  test "x$1" != "xcreate_conf" ; then
     help_message "Configuration file "$PROFILES_FILE" not existing. Perhaps you want to create it?"    
 fi
-if test "x$@" == "x"; then
+if test "x$1" == "x"; then
     help_message
 fi
 
