@@ -29,7 +29,7 @@ function parseProfile() {
 
 function list_profiles() {
     echo "Profiles List"
-    cat "$PROFILES_FILE" | grep -ve "^#" | grep "=" | sed "s/\/[a-zA-Z0-9\-\_]*=.*//g"
+    cat "$PROFILES_FILE" | grep -ve "^#" | grep "=" | sed "s/\/[a-zA-Z0-9\-\_]*=.*//g" | uniq
     exit 0 
 }
 
