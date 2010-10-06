@@ -44,7 +44,7 @@ for interface in $@; do
 	echo "" >> $TEMPFILE
 done
 
-sendemail -f $EMAIL -t $EMAIL -u "[ip-update] $( hostname ) new ip address" -m "$( cat $TEMPFILE )" -s smtp.gmail.com -xu $EMAIL -xp $PASSWD -o tls=yes
+sendemail -f $EMAIL -t $EMAIL -u "[ip-update] $( hostname ) new ip address" -m "$( cat $TEMPFILE )" -s smtp.gmail.com -xu $EMAIL -xp $PASSWD -o tls=yes || exit 1
 
 rm $TEMPFILE
 
