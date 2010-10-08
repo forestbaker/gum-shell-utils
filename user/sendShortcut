@@ -1,0 +1,37 @@
+#!/bin/bash
+FIRST="$1"
+SECOND="$2"
+if test "x$SECOND" == "x"; then
+	echo "Usage: $0 fist_keycode second_keycode"
+	exit 1
+fi
+LOCKFILE="/tmp/$( basename $0 )"
+function unlock() {
+	rm -rf "$LOCKFILE"
+}
+function lock() {
+	if set -o noclobber; echo "$$" > "$LOCKFILE" 2> /dev/null; then
+		LOCKED="OK"
+	else
+	        if test -n "$(cat "$LOCKFILE")" && ps p $(cat "$LOCKFILE") > /dev/null; then
+			echo "Lockfile $LOCKFILE valid; exiting"
+			exit 1
+		else
+			echo "Found stale lockfile in $LOCKFILE; unlocking and retrying..."
+			unlock
+			lock
+		fi
+	fi
+}
+			
+lock	
+
+xsendkeycode $FIRST 1
+sleep 0.1
+xsendkeycode $SECOND 1
+xsendkeycode $SECOND 0
+sleep 0.5
+xsendkeycode $FIRST 0
+
+unlock
+
