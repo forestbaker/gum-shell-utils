@@ -18,8 +18,12 @@ function fixPathFor() {
 }
 BINDIR="/usr/local/bin"
 SBINDIR="/usr/local/sbin"
-mkdir $BINDIR
-mkdir $SBINDIR
+if ! [ -r "$BINDIR" ]; then
+	mkdir -p "$BINDIR"
+fi
+if ! [ -r "$SBINDIR" ]; then
+	mkdir -p "$SBINDIR"
+fi
 
 fixPathFor $BINDIR
 fixPathFor $SBINDIR
