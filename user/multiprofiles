@@ -1,6 +1,24 @@
 #!/bin/bash
-PROFILES_FILE="$( basename $0 .sh).conf"
-WORK_PROFILE="$PROFILES_FILE.work"
+
+function getWorkDirectory() {
+    while read location in $test_locations; do
+       if test -d "$location" && test -w "$location"; then
+           echo "$location"
+           return
+       fi 
+    done <<EOF
+$PWD
+/tmp
+EOF
+}
+
+
+PROFILES_FILENAME="$( basename $0 .sh).conf"
+WORK_PROFILE="$(getWorkDirectory)/$PROFILES_FILENAME.work"
+PROFILES_FILE="${PROFILES_FILE-$PROFILES_FILENAME}"
+
+echo "$PROFILES_FILE"
+exit 1
 
 function create_conf_file() {
     cat >"$PROFILES_FILE" <<EOF
