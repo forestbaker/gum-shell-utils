@@ -1,15 +1,50 @@
 #!/bin/bash
 
 function usage() {
-	echo "Usage: $( basename $0 ) jar strings_to_search"
+	echo "Usage: $( basename $0 ) archive strings_to_search"
 	exit 1
+}
+
+CHECK_FILE_TYPE_CMD="file --mime-type -L -b"
+
+function extractTar() {
+        FILENAME="$1"
+        DIRECTORY="$2"
+	tar xf "$FILENAME" -C "$DIRECTORY"
+}
+
+function handleTar() {
+	FILENAME="$1"
+	DIRECTORY="$2"
+	if test "x$( $CHECK_FILE_TYPE_CMD -z "$FILENAME")" == "xapplication/x-tar"; then
+		echo "Found nested archive, using tar"
+		extractTar "$FILENAME" "$DIRECTORY"
+		return 0
+	fi
+	return 1
 }
 
 function unArchiveCMD() {
 	FILENAME="$1"
 	DIRECTORY="$2"
-	# TODO	
-	unzip -q "$FILENAME" -d "$DIRECTORY"
+	MIMETYPE="$( $CHECK_FILE_TYPE_CMD "$1")"
+        case "$MIMETYPE" in
+		"application/zip")
+		unzip -q "$FILENAME" -d "$DIRECTORY"
+		;;
+		"application/x-tar")
+		extractTar "$FILENAME" "$DIRECTORY"
+		;;
+		"application/x-gzip")
+		handleTar "$FILENAME" "$DIRECTORY" || zcat "$FILENAME" > "$DIRECTORY/$( basename "$FILENAME")"
+		;;
+		"application/x-bzip2")
+                handleTar "$FILENAME" "$DIRECTORY" || bzcat "$FILENAME" > "$DIRECTORY/$( basename "$FILENAME")"
+		;;
+		*)
+		echo "Mimetype $MIMETYPE not supported, exiting;"
+		exit 1
+	esac
 }
 
 JAR="$1"
@@ -25,5 +60,5 @@ unArchiveCMD "$JAR" "$TMPDIR"
 
 
 echo "Searching in jar $JAR (tmpdir: $TMPDIR)"
-grep -irH $@ "$TMPDIR"
+grep -irH --colour=yes $@ "$TMPDIR"
 rm -rf "$TMPDIR"
