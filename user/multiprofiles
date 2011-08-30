@@ -17,9 +17,6 @@ PROFILES_FILENAME="$( basename $0 .sh).conf"
 WORK_PROFILE="$(getWorkDirectory)/$PROFILES_FILENAME.work"
 PROFILES_FILE="${PROFILES_FILE-$PROFILES_FILENAME}"
 
-echo "$PROFILES_FILE"
-exit 1
-
 function create_conf_file() {
     cat >"$PROFILES_FILE" <<EOF
 # $( basename $0 ) configuration file
