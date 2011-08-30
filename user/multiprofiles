@@ -1,4 +1,6 @@
 #!/bin/bash
+# Usage
+# You can override the configuration file location by simply setting PROFILES_FILE="your_location" before sourcing this shell script
 
 function getWorkDirectory() {
     while read location in $test_locations; do
