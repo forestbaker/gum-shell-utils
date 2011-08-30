@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function usage() {
+	echo "Usage: $( basename $0 ) jar strings_to_search"
+	exit 1
+}
+
+function unArchiveCMD() {
+	FILENAME="$1"
+	DIRECTORY="$2"
+	# TODO	
+	unzip -q "$FILENAME" -d "$DIRECTORY"
+}
+
+JAR="$1"
+shift
+
+test "x$JAR" != "x" || usage
+
+TMPDIR="/tmp/$( basename "$JAR" .jar )"
+rm -rf "$TMPDIR"
+mkdir -p $TMPDIR
+
+unArchiveCMD "$JAR" "$TMPDIR"
+
+
+echo "Searching in jar $JAR (tmpdir: $TMPDIR)"
+grep -irH $@ "$TMPDIR"
+rm -rf "$TMPDIR"
