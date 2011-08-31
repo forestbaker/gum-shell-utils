@@ -1,4 +1,11 @@
 #!/bin/bash
+PROFILE_FILENAME="$( basename $0).conf"
+PROFILES_FILE="/etc/$PROFILE_FILENAME"
+HOME_PROFILES_FILE="$HOME/.$PROFILE_FILENAME"
+if [ -r "$HOME_PROFILES_FILE" ]; then
+	PROFILES_FILE="$HOME_PROFILES_FILE"
+fi
+
 function usage() {
 	echo "Usage: $( basename $0) command [player]"
 	echo "commands supported: "
@@ -15,5 +22,6 @@ CMD="$1"
 shift
 test "x$CMD" == "x" && usage
 
+source $( which multiprofiles) || echo "Dependency missing: multiprofiles (from gum-shell-utils)" && exit 1
 echo "CMD=$CMD; args=$@"
 
