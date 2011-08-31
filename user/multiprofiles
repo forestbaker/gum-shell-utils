@@ -28,6 +28,7 @@ function create_conf_file() {
 EOF
     echo "Configuration file $PROFILES_FILE created."
     echo "Probably you may want to edit it before continuing, exiting..."
+    type -t "$( basename $0)_create_conf_file" 2>&1 >/dev/null && $(basename $0)_create_conf_file "$PROFILES_FILE"
     exit 0
 }
 
