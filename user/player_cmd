@@ -1,0 +1,19 @@
+#!/bin/bash
+function usage() {
+	echo "Usage: $( basename $0) command [player]"
+	echo "commands supported: "
+	echo -e "\tplay"
+	echo -e "\tpause"
+	echo -e "\tplaypause"
+	echo -e "\tnext"
+	echo -e "\tprev"
+	echo -e "\tfwd"
+	echo -e "\trew"
+	exit 1
+}
+CMD="$1"
+shift
+test "x$CMD" == "x" && usage
+
+echo "CMD=$CMD; args=$@"
+
