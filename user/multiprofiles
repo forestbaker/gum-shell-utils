@@ -46,7 +46,7 @@ function parseProfile() {
 }
 
 function list_profiles() {
-    echo "Profiles List"
+    test "x$1" == "xnoheader" || echo "Profiles List"
     cat "$PROFILES_FILE" | grep -ve "^#" | grep "=" | sed "s/\/[a-zA-Z0-9\-\_]*=.*//g" | uniq
     exit 0 
 }
@@ -57,6 +57,10 @@ function sourceProfiles() {
 
 
 function help_message() {
+    if test "x$HELP_MESSAGE_MANAGED" == "xtrue"; then
+	    doClean
+	    exit 0
+    fi
     if test "x$@" != "x"; then
         echo -e "$@\n"
     fi 

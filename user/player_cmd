@@ -3,28 +3,39 @@ PROFILE_FILENAME="$( basename $0).conf"
 HOME_PROFILES_FILE="$HOME/.$PROFILE_FILENAME"
 PROFILES_FILE="$HOME_PROFILES_FILE"
 
+commands_list="play pause playpause next prev fwd rew"
+
 function usage() {
 	echo "Usage: $( basename $0) command [player]"
 	echo "commands supported: "
-	echo -e "\tplay"
-	echo -e "\tpause"
-	echo -e "\tplaypause"
-	echo -e "\tnext"
-	echo -e "\tprev"
-	echo -e "\tfwd"
-	echo -e "\trew"
+	for cmd in $commands_list; do
+		echo -e "\t$cmd"
+	done
 	exit 1
 }
 
-CMD="$1"
-shift
-test "x$CMD" == "x" && usage
-
 function player_cmd_create_conf_file() {
-	echo "$@"
+	FILE="$1"
+	read -p "Please enter a list of players you want to configure, separated by space: " players
+	for player in $players; do
+		for cmd in $commands_list; do
+			echo "$player/$cmd=configure_me" >> $FILE
+		done
+		echo -e "\n" >> $FILE
+	done
 }
 
+
+CMD="$1"
+for cmd in $commands_list; do
+	test "x$cmd" == "x$CMD" && shift
+done
+
+
+test "x$CMD" == "x" && usage
+
 source $( which multiprofiles) || echo "Dependency missing: multiprofiles (from gum-shell-utils)" && exit 1
+
 
 echo "CMD=$CMD; args=$@"
 
