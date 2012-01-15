@@ -1,0 +1,45 @@
+#!/bin/bash
+DEFAULT_BACKUP_FILE="/etc/current-mbr-backup"
+BACKUP_FILE="${3-$DEFAULT_BACKUP_FILE}"
+MODE="$1"
+DEVICE="$2"
+
+MBR_BLOCKS="446"
+
+function backup() {
+	MY_DEVICE="$2"
+	MY_BACKUP_FILE="$1"
+	echo "Executing backup of $MY_DEVICE in $MY_BACKUP_FILE"
+	dd if="$MY_DEVICE" of="$MY_BACKUP_FILE" bs="$MBR_BLOCKS" count=1
+}
+
+function restore() {
+	MY_DEVICE="$2"
+	MY_BACKUP_FILE="$1"
+	echo "Restoring MBR from $MY_DEVICE to $MY_BACKUP_FILE"
+	read -p "Are you really sure? [Y/N] " sure
+	if test "x$sure" != "xy" && test "x$sure" != "xY"; then
+		echo "Abort"
+		exit 1
+	fi
+	dd if="$MY_BACKUP_FILE" of="$MY_DEVICE" bs="$MBR_BLOCKS" count=1
+}
+
+if test "x$DEVICE" == "x" || ! test -b  "$DEVICE" ; then
+	MODE="invalid"
+fi
+
+case "$MODE" in
+	"backup")
+		backup "$BACKUP_FILE" "$DEVICE"
+		;;
+	"restore")
+		restore "$BACKUP_FILE" "$DEVICE"
+		;;
+	*)
+		echo "Usage: $0 backup|restore device [backup file]"
+		echo "Backups your bootloader (by default in $DEFAULT_BACKUP_FILE), or restores it when needed"
+		exit 1
+		;;
+esac
+

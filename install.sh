@@ -30,3 +30,12 @@ fixPathFor $SBINDIR
 for file in user/*; do
 	installFile $file $BINDIR
 done
+
+for file in root/*; do
+	installFile $file $SBINDIR
+done
+
+for file in root/*; do
+	installFile $file $SBINDIR
+done
+
