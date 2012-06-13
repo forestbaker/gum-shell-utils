@@ -1,0 +1,26 @@
+#!/bin/bash
+
+case "$1" in
+	"")
+	;;
+	"setup")
+	if ! grep -q "$( readlink -f "$0")" "$HOME/.bashrc"; then
+		echo "source $( readlink -f "$0")" >> "$HOME/.bashrc"
+	fi
+	;;
+	*)
+	echo "This script is meant to be just sourced."
+	echo "If you want to do this automatically, just run"
+	echo "$0 setup"
+	exit 0
+	;;
+esac
+
+alias s-up='svn up'
+alias s-ci='svn ci'
+alias s-add='svn add'
+alias s-st='svn st'
+alias s-revert='svn revert'
+alias s-addall='svn st | egrep -e "^\?" | awk '\''{ print $2 }'\'' | while read fileToAdd; do svn add $fileToAdd; done' 
+alias s-revertall='svn revert -R .; svn st | egrep -e "^\?" | awk '\''{ print $2 }'\'' | while read fileToAdd; do rm -rf $fileToAdd; done'
+alias s-diff='svn diff --diff-cmd="diff" -x "-u -w -B --strip-trailing-cr"| colordiff | less -R'
