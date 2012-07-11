@@ -23,7 +23,7 @@ MY_DATABASE_CONNECTION="-h $LOCAL_DB_HOST --port=$LOCAL_DB_PORT -u$LOCAL_DB_USER
 # --add-drop-table means we want to destroy and recreate our local database. Remove it if you just want to append data.
 EXPORT_DROPTABLE_OPTS="--add-drop-table"
 EXPORT_NODROPTABLE_OPTS="--skip-add-drop-table --no-create-info --insert-ignore"
-EXPORT_COMMON_OPTS="--skip-add-locks --complete-insert --skip-comments"
+EXPORT_COMMON_OPTS="--skip-add-locks --complete-insert --skip-comments --single-transaction"
 
 function importTable() {
   TABLE="$1"
