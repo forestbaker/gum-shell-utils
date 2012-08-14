@@ -1,0 +1,76 @@
+#!/bin/bash
+function trim() {
+        echo $*
+}
+
+function checkVersion() {
+        pkgName="$( basename $1)"
+        firstTwoLetters="$( echo "$pkgName" | head -c 2 )"
+        PKGBUILD="$( curl -s "http://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/PKGBUILD" )"
+        tarball_url="http://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/$pkgName.tar.gz"
+        pkgver="$( echo "$PKGBUILD" | grep 'pkgver=' | cut -d= -f2- | cut -d# -f1 )"
+        pkgrel="$( echo "$PKGBUILD" | grep 'pkgrel=' | cut -d= -f2- | cut -d# -f1 )"
+        pkgver="$( trim $pkgver | cut -d' ' -f1 )"
+        test "x$pkgrel" == "x" || version_separator="-"
+        full_version="$( trim ${pkgver})${version_separator}$( trim ${pkgrel})"
+        pacman_version="$( pacman -Q "$pkgName" 2>/dev/null| cut -d' ' -f2-)"
+        test "x$pacman_version" == "x" && pacman_version="NOT INSTALLED"
+        if test "x$full_version" != "x$pacman_version"; then
+                echo "$pkgName - Local installed version: $pacman_version"
+                echo "$( echo "$pkgName" | sed "s/./ /g")   AUR repository version:  $full_version"
+                echo "Tarball url: $tarball_url"
+                echo ""
+        fi
+}
+
+function checkAll() {
+        packagesDir="${1-$HOME/Sistema/aur}"
+        find "$packagesDir" -maxdepth 1 -mindepth 1 -type d -exec $0 checkVersion {} \;
+}
+
+function makePackage() {
+	checkVersion $@
+	if test "x$tarball_url" == "x"; then
+		echo "Url not found"
+		exit 1
+	fi
+	pkgfile="$( basename $tarball_url)"
+	pkgname="$( basename $tarball_url .tar.gz)"
+        packagesDir="$HOME/Sistema/aur"
+	cd $packagesDir
+	rm -rf "$pkgname"
+	wget -c "$tarball_url"
+	tar xf "$pkgfile"
+	rm "$pkgfile"
+	cd "$pkgname"
+	makepkg
+}
+
+function help() {
+        echo "Usage: $0 <command> [arguments]"
+        echo "Command can be:"
+        echo "checkVersion <pkgname>"
+        echo "checkAll [aurDirectory]"
+	echo "mkpkg <pkgname>"
+        exit 0
+}
+
+command="$1"; shift
+case $command in
+        "checkVersion")
+        checkVersion $@
+        ;;
+        "checkAll"|"")
+        checkAll $@
+        ;;
+	"mkpkg")
+	makePackage $@
+	;;
+        "--help"|"-h")
+        help
+        ;;
+        *)
+        help
+        ;;
+esac
+
