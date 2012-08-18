@@ -1,4 +1,6 @@
 #!/bin/bash
+PACKAGES_DIR="${PACKAGES_DIR-$HOME/System/aur}"
+
 function trim() {
         echo $*
 }
@@ -24,8 +26,7 @@ function checkVersion() {
 }
 
 function checkAll() {
-        packagesDir="${1-$HOME/Sistema/aur}"
-        find "$packagesDir" -maxdepth 1 -mindepth 1 -type d -exec $0 checkVersion {} \;
+        find "$PACKAGES_DIR" -maxdepth 1 -mindepth 1 -type d -exec $0 checkVersion {} \;
 }
 
 function makePackage() {
@@ -36,8 +37,7 @@ function makePackage() {
 	fi
 	pkgfile="$( basename $tarball_url)"
 	pkgname="$( basename $tarball_url .tar.gz)"
-        packagesDir="$HOME/Sistema/aur"
-	cd $packagesDir
+	cd $PACKAGES_DIR
 	rm -rf "$pkgname"
 	wget -c "$tarball_url"
 	tar xf "$pkgfile"
