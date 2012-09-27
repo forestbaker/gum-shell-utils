@@ -30,7 +30,8 @@ function checkAll() {
 }
 
 function makePackage() {
-	checkVersion $@
+  for pkg in $@; do
+	checkVersion $pkg
 	if test "x$tarball_url" == "x"; then
 		echo "Url not found"
 		exit 1
@@ -44,6 +45,7 @@ function makePackage() {
 	rm "$pkgfile"
 	cd "$pkgname"
 	makepkg
+  done
 }
 
 function help() {
