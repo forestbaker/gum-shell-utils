@@ -8,8 +8,8 @@ function trim() {
 function checkVersion() {
         pkgName="$( basename $1)"
         firstTwoLetters="$( echo "$pkgName" | head -c 2 )"
-        PKGBUILD="$( curl -s "http://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/PKGBUILD" )"
-        tarball_url="http://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/$pkgName.tar.gz"
+        PKGBUILD="$( curl -s "https://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/PKGBUILD" )"
+        tarball_url="https://aur.archlinux.org/packages/$firstTwoLetters/$pkgName/$pkgName.tar.gz"
         pkgver="$( echo "$PKGBUILD" | grep 'pkgver=' | cut -d= -f2- | cut -d# -f1 )"
         pkgrel="$( echo "$PKGBUILD" | grep 'pkgrel=' | cut -d= -f2- | cut -d# -f1 )"
         pkgver="$( trim $pkgver | cut -d' ' -f1 )"
@@ -45,6 +45,10 @@ function makePackage() {
 	rm "$pkgfile"
 	cd "$pkgname"
 	makepkg
+	if test "x$DO_INSTALL" == "xyes"; then
+		install_cmd="pacman -U -v --noconfirm *.tar.xz"
+		$install_cmd || sudo $install_cmd
+	fi
   done
 }
 
@@ -54,6 +58,7 @@ function help() {
         echo "checkVersion <pkgname>"
         echo "checkAll [aurDirectory]"
 	echo "mkpkg <pkgname>"
+	echo "Use DO_INSTALL=yes to automatically install created packages"
         exit 0
 }
 
