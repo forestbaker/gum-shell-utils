@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+function thumbnailNameForFile() {
+	FNAME="$1"
+	if [ -r "$FNAME" ]; then
+		FNAME="file://$FNAME"
+	fi
+	THUMB_NAME="$( echo -n "$FNAME" | sed "s/ /%20/g" | md5sum | cut -f1 -d' ' ).png"
+	echo "$THUMB_NAME"
+}
+
+
+echo "$( date +%s ) $@" >> /tmp/$(basename $0).log
+
+function doHelp() {
+	echo "Usage: $0 <command> <file>"
+	echo "Commands supported: "
+	echo -e "\trm - removes all thumbnails for file"
+}
+
+function rmThumbFor() {
+	thumbName="$( thumbnailNameForFile "$@" )"
+	for dir in $HOME/.thumbnails/*; do
+		if [ -r "$dir/$thumbName" ]; then rm -f "$dir/$thumbName"; fi
+	done	
+}
+
+command=$1; shift
+case $command in
+	"rm")
+	rmThumbFor "$@"
+	;;
+	*)
+	doHelp
+	exit 0
+	;;
+esac
+

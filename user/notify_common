@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+
+function formatSize() {
+	BYTES=$1
+	echo "scale=2
+	size=$BYTES
+	unit=0
+	while(size>900 && unit < 4) {
+		size/=1024
+		unit++
+	}
+	print size, \" \"
+
+	if(unit == 0) print \"Bytes\"
+	if(unit == 1) print \"KB\"
+	if(unit == 2) print \"MB\"
+	if(unit == 3) print \"GB\"
+	if(unit == 4) print \"TB\"
+" | bc
+	
+}
+
+formatSize $@

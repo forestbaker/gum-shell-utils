@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 /etc/init.d/miredo restart
 sleep 15
 while ! send_ifconfig_to_gmail.sh marco teredo; do sleep 2; done

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 PROFILE="$HOME/.bashrc"
 function installFile() {
 	FILE="$1"

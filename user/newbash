@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 function usage() {
     echo "Usage: `basename $0` filename [interpreter path]"
     exit 0
@@ -9,7 +9,7 @@ if test "x$1" == "x"; then
     usage
 fi
 
-INTERPRETER="/bin/bash"
+INTERPRETER="$( which bash 2>/dev/null)"
 
 if test "x$2" != "x"; then
     if ! [ -r $2 ]; then

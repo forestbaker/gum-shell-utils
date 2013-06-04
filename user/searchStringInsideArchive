@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 function usage() {
 	echo "Usage: $( basename $0 ) archive strings_to_search" 1>&2

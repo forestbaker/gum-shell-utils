@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # Only mysql is supported at the moment.
 # using ssh port forwarding, remember to launch first
 # - $ ssh host-that-can-access-mysql -L 13306:mysql-real-host:3306 -v -N
@@ -49,7 +49,7 @@ function createExportDir() {
 function create_import_sql_script() {
   import_sql_script="$EXPORT_DIRNAME/import_sql_$LOCAL_DB_SCHEMA.sh"
   if ! [ -x "$import_sql_script" ]; then
-    echo '#!/bin/bash' > "$import_sql_script"
+    echo '#!/usr/bin/bash' > "$import_sql_script"
     echo "mysql $MY_DATABASE_CONNECTION" >> "$import_sql_script"
     chmod +x "$import_sql_script"
   fi
@@ -61,7 +61,7 @@ function append_table_to_generate_sql_script() {
   generate_sql_script="$( dirname "$export_filename")/generate_sql_$LOCAL_DB_SCHEMA.sh"
   if ! [ -x "$generate_sql_script" ]; then
 cat > "$generate_sql_script" <<EOF
-#!/bin/bash
+#!/usr/bin/bash
 function read_file() {
   file="\$1"
   [ -r "\${file}" ] && cat "\${file}"

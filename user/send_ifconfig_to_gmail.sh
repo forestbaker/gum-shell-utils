@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 USER="$1"
 GMAILRC="/home/$USER/.gmailrc"
 shift

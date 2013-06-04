@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 ROWSINDEX="/tmp/$( basename $0 ).$( date +%s)"
 ROWTAG="row"
 RESULTSETTAG="resultset"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 PROFILE_FILENAME="$( basename $0).conf"
 HOME_PROFILES_FILE="$HOME/.$PROFILE_FILENAME"
 PROFILES_FILE="$HOME_PROFILES_FILE"

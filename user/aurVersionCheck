@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 PACKAGES_DIR="${PACKAGES_DIR-$HOME/System/aur}"
 
 function trim() {
