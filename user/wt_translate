@@ -1,0 +1,67 @@
+#!/usr/bin/bash
+read content
+content="${content##\"}"
+content="${content%%\"}"
+
+function msg_exit() {
+	message="$1"; shift
+	kdialog --sorry "$message" $@
+	exit 1 
+}
+
+project_dir="$1"
+if ! [ -d "$project_dir" ] || test "x$content" == "x"; then
+	msg_exit "Usage: $0 project_directory\nYou have to select a text to translate"
+fi
+
+settings_file="$project_dir/.wt_translate"
+
+function write_config() {
+	translation_files="$( kdialog --getopenfilename "$project_dir" "*.xml" --multiple --title "Choose string translation files" 2>/dev/null )"
+	echo "Got translation files: $translation_files" >&2
+	test "x$translation_files" == "x" && msg_exit "You have to configure your project for translation first"
+
+	translation_function="$( kdialog --title "Translation Function" --inputbox "Function used to translate.<br />Default: Wt::WString::tr" "Wt::WString::tr" 2>/dev/null )"
+	test "x$translation_function" == "x" && msg_exit "You have to configure your project for translation first"
+
+	cat >"$settings_file" <<EOF
+TRANSLATION_FILES="$translation_files"
+TRANSLATION_FUNCTION="$translation_function"
+EOF
+}
+
+function config_ok() {
+	test "$TRANSLATION_FILES" != "" && test "$TRANSLATION_FUNCTION" != ""
+}
+
+
+while ! config_ok; do
+	[ -r "$settings_file" ] && source "$settings_file"
+	config_ok || write_config
+done
+
+echo "translation files: $TRANSLATION_FILES; translation function: $TRANSLATION_FUNCTION" >&2
+
+key_suggestion_words="$( echo "$content" | tr "A-Z" "a-z" | tr -c '[:alnum:]' ' ')"
+i=0; sep=""
+for word in $key_suggestion_words; do
+	key_suggestion="${key_suggestion}${sep}${word}"
+	sep="_"; i=$(( $i+1 ))
+	test $i -gt 2 && break
+done
+
+tr_key="$( kdialog --title "Translation Key" --inputbox "Choose a translation key to identify your string" "$key_suggestion")"
+test "$tr_key" == "" && msg_exit "You have to choose a key name"
+
+for file in $TRANSLATION_FILES; do
+	tmpfile="/tmp/$( basename "$0")_$( basename "$file").work"
+	message="$( kdialog --title "Translated Message" --inputbox "How to translate your string for ${file##$project_dir}" "$content")"
+	test "$message" == "" && continue
+	line="$( grep "</messages>" -n "$file" -o | cut -f1 -d: )"
+	head "$file" -n $(( $line - 1 )) > "$tmpfile"
+	echo "<message id=\"$tr_key\">$message</message>" >> "$tmpfile"
+	tail "$file" -n +$line >> "$tmpfile"
+	cat "$tmpfile" > "$file"
+	rm "$tmpfile"
+done
+echo "${TRANSLATION_FUNCTION}(\"$tr_key\")"

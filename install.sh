@@ -21,9 +21,9 @@ SBINDIR="/usr/local/sbin"
 if ! [ -r "$BINDIR" ]; then
 	mkdir -p "$BINDIR"
 fi
-if ! [ -r "$SBINDIR" ]; then
-	mkdir -p "$SBINDIR"
-fi
+#if ! [ -r "$SBINDIR" ]; then
+#	mkdir -p "$SBINDIR"
+#fi
 
 fixPathFor $BINDIR
 fixPathFor $SBINDIR
@@ -31,7 +31,7 @@ for file in user/*; do
 	installFile $file $BINDIR
 done
 
-for file in root/*; do
-	installFile $file $SBINDIR
-done
+#for file in root/*; do
+#	installFile $file $SBINDIR
+#done
 
